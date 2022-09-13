@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import ical2json from "ical2json";
-import { format, compareDesc, parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 // fichier contenant toutes les interactions avec le fichier
 
@@ -25,10 +25,10 @@ export async function getCoursesAt(date) {
         cours_data = jsonCal.VCALENDAR[0].VEVENT;
 
         let res = [];
-        let target = format(new Date(date), "dd-mm-yyyy");
+        let target = format(new Date(date), "dd-MM-yyyy");
 
         cours_data.forEach((cours) => {
-          let tmp = format(new Date(parseISO(cours.DTSTART)), "dd-mm-yyyy");
+          let tmp = format(new Date(parseISO(cours.DTSTART)), "dd-MM-yyyy");
           if (tmp === target) {
             res.push(cours);
           }
@@ -41,4 +41,3 @@ export async function getCoursesAt(date) {
       .catch((e) => reject(e));
   });
 }
-getCoursesAt("09/13/2022").then((resp) => console.log(resp));
