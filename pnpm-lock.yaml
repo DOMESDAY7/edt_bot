@@ -1,20 +1,26 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@discordjs/rest': ^1.1.0
   '@types/node': '*'
+  date-fns: ^2.29.3
   discord.js: ^14.3.0
   dotenv: ^16.0.2
   ical2json: ^3.1.2
   node-fetch: ^3.2.10
+  pnpm: ^7.11.0
   ts-node: ^10.9.1
   typescript: ^4.8.3
 
 dependencies:
+  '@discordjs/rest': 1.1.0
   '@types/node': 18.7.16
+  date-fns: 2.29.3
   discord.js: 14.3.0
   dotenv: 16.0.2
   ical2json: 3.1.2
   node-fetch: 3.2.10
+  pnpm: 7.11.0
 
 devDependencies:
   ts-node: 10.9.1_jq3ovzqw3j7j4aj2v37zonaj5u
@@ -150,6 +156,11 @@ packages:
     engines: {node: '>= 12'}
     dev: false
 
+  /date-fns/2.29.3:
+    resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}
+    engines: {node: '>=0.11'}
+    dev: false
+
   /diff/4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
     engines: {node: '>=0.3.1'}
@@ -257,6 +268,12 @@ packages:
   /peek-readable/5.0.0:
     resolution: {integrity: sha512-YtCKvLUOvwtMGmrniQPdO7MwPjgkFBtFIrmfSbYmYuq3tKDV/mcfAhBth1+C3ru7uXIZasc/pHnb+YDYNkkj4A==}
     engines: {node: '>=14.16'}
+    dev: false
+
+  /pnpm/7.11.0:
+    resolution: {integrity: sha512-cxh4TfCE8L4ZbLBN72kTGKTYP7X08nrIzoQ2rQCKihAcIHAdNIgsk4bEJyE1xHjE+bNJt9skwr7aJv3LpvUawQ==}
+    engines: {node: '>=14.6'}
+    hasBin: true
     dev: false
 
   /readable-stream/3.6.0:

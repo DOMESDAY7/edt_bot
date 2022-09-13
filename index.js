@@ -16,7 +16,7 @@ console.log("Starting...")
 
 // on bot ready
 client.on("ready",()=>{
-    console.log("the bot is online")
+    console.log("🤖 The bot is online")
 })
 
 client.on('interactionCreate', async interaction => {

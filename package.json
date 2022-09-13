@@ -1,15 +1,14 @@
 {
 	"type": "module",
 	"dependencies": {
-
 		"@discordjs/rest": "^1.1.0",
-		"pnpm": "^7.11.0",
 		"@types/node": "*",
+		"date-fns": "^2.29.3",
 		"discord.js": "^14.3.0",
 		"dotenv": "^16.0.2",
 		"ical2json": "^3.1.2",
-		"node-fetch": "^3.2.10"
-
+		"node-fetch": "^3.2.10",
+		"pnpm": "^7.11.0"
 	},
 	"devDependencies": {
 		"ts-node": "^10.9.1",

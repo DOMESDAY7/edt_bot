@@ -5,8 +5,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const commands = [
-	new SlashCommandBuilder().setName('ping').setDescription('Répond avec pong !'),
-	new SlashCommandBuilder().setName('aujd').setDescription("Répond avec tes cours d'aujourd'hui !"),
+	new SlashCommandBuilder().setName('ping').setDescription('Answers with pong!'),
+	new SlashCommandBuilder().setName('aujd').setDescription("Answers with your classes of today!"),
 ]
 	.map(command => command.toJSON());
 
