@@ -59,6 +59,15 @@ function sortCourses(courses) {
   }
 }
 
+export function courseToString(course) {
+  return format(parseISO(course.DTSTART), "HH:mm") +
+          " : **" +
+          course.SUMMARY +
+          "** en *" +
+          course.LOCATION +
+          "*.\n";
+}
+
 export async function getNextCourse() {
   return new Promise((resolve, reject) => {
     getCoursesAt(new Date()).then((cours) => {

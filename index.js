@@ -1,6 +1,6 @@
 import DiscordJS from "discord.js";
 import dotenv from "dotenv";
-import { getCoursesAt, getNextCourse } from "./api.js";
+import { courseToString, getCoursesAt, getNextCourse } from "./api.js";
 import { format, parseISO } from "date-fns";
 
 // Minutes before class when the notification comes up
@@ -34,6 +34,7 @@ client.on("ready", () => {
     .then(() => {
       setInterval(() => {
         getNextCourse().then((cours) => {
+          console.log(cours)
           if(cours == null)
             return;
           
@@ -71,17 +72,11 @@ client.on("interactionCreate", async (interaction) => {
   // cours d'aujourd'hui
   if (commandName === "aujd") {
     await getCoursesAt(new Date()).then((cours) => {
-      console.log(cours);
       interaction.reply(
         "Voici ton emploi du temps d'aujourd'hui !\n" +
           cours.map(
             (cours) =>
-              format(parseISO(cours.DTSTART), "HH:mm") +
-              " : **" +
-              cours.SUMMARY +
-              "** en *" +
-              cours.LOCATION +
-              "*.\n"
+              courseToString(cours)
           )
       );
     });
@@ -92,17 +87,11 @@ client.on("interactionCreate", async (interaction) => {
     demain.setDate(demain.getDate() + 1);
 
     await getCoursesAt(demain).then((cours) => {
-      console.log(cours);
       interaction.reply(
         "Voici ton emploi du temps de demain !\n" +
           cours.map(
             (cours) =>
-              format(parseISO(cours.DTSTART), "HH:mm") +
-              " : **" +
-              cours.SUMMARY +
-              "** en *" +
-              cours.LOCATION +
-              "*.\n"
+              courseToString(cours)
           )
       );
     });
@@ -110,19 +99,13 @@ client.on("interactionCreate", async (interaction) => {
   // prochain cours
   if (commandName === "next") {
     await getNextCourse().then((cours) => {
-        console.log(cours);
         if(cours == null) {
             interaction.reply("Tu n'as plus cours aujourd'hui !")
         }
         else {
             interaction.reply(
                 "Voici ton prochain cours !\n" +
-                format(parseISO(cours.DTSTART), "HH:mm") +
-                " : **" +
-                cours.SUMMARY +
-                "** en *" +
-                cours.LOCATION +
-                "*.\n"
+                courseToString(cours)
             );}
       });
   }
