@@ -8,6 +8,7 @@ const commands = [
 	new SlashCommandBuilder().setName('ping').setDescription('Answers with pong!'),
 	new SlashCommandBuilder().setName('aujd').setDescription("Answers with your classes of today!"),
 	new SlashCommandBuilder().setName('demain').setDescription("Answers with your classes of tomorrow!"),
+	new SlashCommandBuilder().setName('next').setDescription("Answers with your next class!"),
 ]
 	.map(command => command.toJSON());
 

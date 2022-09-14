@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import ical2json from "ical2json";
-import { format, parseISO } from "date-fns";
+import { compareAsc, format, parseISO, getHours } from "date-fns";
 
 // fichier contenant toutes les interactions avec le fichier externe
 
@@ -35,9 +35,51 @@ export async function getCoursesAt(date) {
         });
 
         // on reverse le tableau pour avoir les matières dans l'ordre
-        res.reverse();
+        sortCourses(res);
         resolve(res);
       })
       .catch((e) => reject(e));
   });
+}
+
+// Trie les cours résultants du fetch en fonction de la date de début de ces derniers
+function sortCourses(courses) {
+
+  for(let i = 0; i<courses.length - 1; i++) {
+    for(let j = 0; j < (courses.length - i) - 1; j++) {
+      let current_course = parseISO(courses[j].DTSTART)
+      let next_course = parseISO(courses[j+1].DTSTART)
+
+      if(compareAsc(current_course, next_course) == 1){
+        let tmp = courses[j];
+        courses[j] = courses[j+1];
+        courses[j+1] = tmp;
+      }
+    }
+  }
+}
+
+export async function getNextCourse() {
+  return new Promise((resolve, reject) => {
+    getCoursesAt(new Date()).then((cours) => {
+      // On trie les cours
+      sortCourses(cours);
+
+      // on récupère l'heure actuelle
+      let ajd = new Date();
+      let heure_actu = getHours(ajd);
+
+      // pour chaque cours on récupère l'heure de début
+      // (les cours sont triés donc on peut s'arrêter dès qu'on rentre dans le if)
+      for (let i = 0; i < cours.length; i++) {
+        let tmp = getHours(new Date(parseISO(cours[i].DTSTART)))
+        if (compareAsc(tmp, heure_actu) == 1) {
+          resolve(cours[i]);
+        }
+      }
+
+      resolve(null);
+  })
+  .catch((e) => reject(e));
+  })
 }
