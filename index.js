@@ -1,7 +1,7 @@
 import DiscordJS from "discord.js";
 import dotenv from "dotenv";
 import { courseToString, getCoursesAt, getNextCourse } from "./api.js";
-import { format, parseISO } from "date-fns";
+import { parseISO } from "date-fns";
 
 // Minutes before class when the notification comes up
 const NOTIF_OFFSET = 10;
@@ -45,19 +45,12 @@ client.on("ready", () => {
           && parseISO(cours.DTSTART).getMinutes() == notif_time.getMinutes()){
   
               ALERT_CHANNEL.send("Prochain cours dans " + NOTIF_OFFSET + " minutes pour les @1l !" +
-                  format(parseISO(cours.DTSTART), "HH:mm") +
-                  " : **" +
-                  cours.SUMMARY +
-                  "** en *" +
-                  cours.LOCATION +
-                  "*.\n"
+                  courseToString(cours)
               )
           }
       })
     }, 6000)
     })
-
-
 });
 
 // Waiting for a command on the server specified by the environement
@@ -71,7 +64,10 @@ client.on("interactionCreate", async (interaction) => {
   }
   // cours d'aujourd'hui
   if (commandName === "aujd") {
-    await getCoursesAt(new Date()).then((cours) => {
+    let grp_langue = interaction.options.getString('langue');
+    let langue_id = data_dict.English[grp_langue];
+
+    await getCoursesAt(new Date(), langue_id).then((cours) => {
       interaction.reply(
         "Voici ton emploi du temps d'aujourd'hui !\n" +
           cours.map(
