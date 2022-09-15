@@ -64,13 +64,14 @@ client.on("interactionCreate", async (interaction) => {
   }
   // cours d'aujourd'hui
   if (commandName === "aujd") {
-    let grp_langue = interaction.options.getString('langue');
-    let langue_id = data_dict.English[grp_langue];
+    let aujd = new Date();
+    let langue = interaction.options.getString('langue');
 
-    await getCoursesAt(new Date(), langue_id).then((cours) => {
+    await getCoursesAt(aujd, langue).then((cours) => {
       interaction.reply(
-        "Voici ton emploi du temps d'aujourd'hui !\n" +
-          cours.map(
+        "Voici ton emploi du temps d'aujourd'hui !\n\n" +
+        "📅  " + aujd.toLocaleDateString() + "\n" +
+        cours.map(
             (cours) =>
               courseToString(cours)
           )
@@ -84,8 +85,9 @@ client.on("interactionCreate", async (interaction) => {
 
     await getCoursesAt(demain).then((cours) => {
       interaction.reply(
-        "Voici ton emploi du temps de demain !\n" +
-          cours.map(
+        "Voici ton emploi du temps de demain !\n\n" +
+        "📅  " + demain.toLocaleDateString() + "\n" +
+        cours.map(
             (cours) =>
               courseToString(cours)
           )
@@ -96,11 +98,12 @@ client.on("interactionCreate", async (interaction) => {
   if (commandName === "next") {
     await getNextCourse().then((cours) => {
         if(cours == null) {
-            interaction.reply("Tu n'as plus cours aujourd'hui !")
+            interaction.reply("Tu n'as plus cours aujourd'hui ! 🍻")
         }
         else {
             interaction.reply(
-                "Voici ton prochain cours !\n" +
+                "Voici ton prochain cours !\n\n" +
+                "📅  " + (new Date()).toLocaleDateString() + "\n" +
                 courseToString(cours)
             );}
       });

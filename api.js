@@ -7,15 +7,31 @@ function initialiseURL(langue, weeks) {
   if(langue == null)
     return "https://planif.esiee.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=3172&projectId=10&calType=ical&nbWeeks="+weeks;
 
-  let langue_id = 3470 + langue;
-  return "https://planif.esiee.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=" + langue_id + ",3172,3173&projectId=10&calType=vcal&nbWeeks="+weeks;
+  return "https://planif.esiee.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=" + langue + ",3172,3173&projectId=10&calType=vcal&nbWeeks="+weeks;
 }
 
 export async function getCoursesAt(date, langue=null, weeks=1) {
   return new Promise((resolve, reject) => {
     let cours_data;
-    let url = initialiseURL(langue, weeks);
+    let langue_id;
 
+    // Temporary
+    switch(langue) {
+      case "1" : langue_id = 3471; break;
+      case "2" : langue_id = 3472; break;
+      case "3" : langue_id = 3473; break;
+      case "4" : langue_id = 3474; break;
+      case "5" : langue_id = 3096; break;
+      case "6" : langue_id = 2040; break;
+      case "7" : langue_id = 6122; break;
+      case "8" : langue_id = 2881; break;
+      case "9" : langue_id = 1264; break;
+      case "10" : langue_id = 555; break;
+      case "11" : langue_id = 5196; break;
+    }
+    console.log(langue + " -> " + langue_id)
+
+    let url = initialiseURL(langue_id, weeks);
     fetch(url, {
       headers: {
         "Content-Type": "application/text",
@@ -66,14 +82,25 @@ function sortCourses(courses) {
 }
 
 export function courseToString(course) {
-  return "------------------------------------\n" +
-          format(parseISO(course.DTSTART), "HH:mm") +
-          " : **" +
-          course.SUMMARY +
-          "**\n" + format(parseISO(course.DTEND), "HH:mm") +
-          " en *" +
+  return ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n" +
+          getStatusCourse(course) + format(parseISO(course.DTSTART), "HH:mm") +
+          " | **" +
+          "📖 " + course.SUMMARY + "**\n" +
+          "       " + format(parseISO(course.DTEND), "HH:mm") +
+          " |📍  en *" +
           course.LOCATION +
-          "*.\n";
+          "*.\n" +
+          "'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\n";
+}
+
+function getStatusCourse(course) {
+  let aujd = new Date();
+  let course_start_date = new Date(parseISO(course.DTSTART));
+  let course_end_date = new Date(parseISO(course.DTEND))
+
+  if (compareAsc(course_start_date, aujd) == 1)
+    return "🕐 ";
+  return compareAsc(course_end_date, aujd) == 1 ? "⌛ " : ":white_check_mark: ";
 }
 
 export async function getNextCourse() {
