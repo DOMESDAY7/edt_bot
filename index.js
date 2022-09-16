@@ -1,7 +1,7 @@
 import DiscordJS from "discord.js";
 import dotenv from "dotenv";
 import { courseToString, getCoursesAt, getNextCourse } from "./api.js";
-import { format, parseISO } from "date-fns";
+import { parseISO } from "date-fns";
 
 // Minutes before class when the notification comes up
 const NOTIF_OFFSET = 10;
@@ -35,38 +35,23 @@ client.on("ready", () => {
     .then(() => {
       setInterval(() => {
         getNextCourse().then((cours) => {
-          console.log(cours);
-          if (cours == null) return;
-
-          let notif_time = new Date(
-            new Date().getTime() + NOTIF_OFFSET * 60000
-          );
-          console.log(
-            "Compare : " +
-              notif_time.getMinutes() +
-              " et " +
-              parseISO(cours.DTSTART).getMinutes()
-          );
-
-          if (
-            parseISO(cours.DTSTART).getHours() == notif_time.getHours() &&
-            parseISO(cours.DTSTART).getMinutes() == notif_time.getMinutes()
-          ) {
-            ALERT_CHANNEL.send(
-              "Prochain cours dans " +
-                NOTIF_OFFSET +
-                " minutes pour les @1l !" +
-                format(parseISO(cours.DTSTART), "HH:mm") +
-                " : **" +
-                cours.SUMMARY +
-                "** en *" +
-                cours.LOCATION +
-                "*.\n"
-            );
+          console.log(cours)
+          if(cours == null)
+            return;
+          
+          let notif_time = new Date(new Date().getTime() + NOTIF_OFFSET*60000);
+          console.log("Compare : "+notif_time.getMinutes() +" et "+parseISO(cours.DTSTART).getMinutes());
+  
+          if(parseISO(cours.DTSTART).getHours() == notif_time.getHours()
+          && parseISO(cours.DTSTART).getMinutes() == notif_time.getMinutes()){
+  
+              ALERT_CHANNEL.send("Prochain cours dans " + NOTIF_OFFSET + " minutes pour les @1l !" +
+                  courseToString(cours)
+              )
           }
-        });
-      }, 6000);
-    });
+      })
+    }, 6000)
+    })
 });
 
 // Waiting for a command on the server specified by the environement
@@ -80,10 +65,17 @@ client.on("interactionCreate", async (interaction) => {
   }
   // cours d'aujourd'hui
   if (commandName === "aujd") {
-    await getCoursesAt(new Date()).then((cours) => {
+    let aujd = new Date();
+    let langue = interaction.options.getString('langue');
+
+    await getCoursesAt(aujd, langue).then((cours) => {
       interaction.reply(
-        "Voici ton emploi du temps d'aujourd'hui !\n" +
-          cours.map((cours) => courseToString(cours))
+        "Voici ton emploi du temps d'aujourd'hui !\n\n" +
+        "📅  " + aujd.toLocaleDateString() + "\n" +
+        cours.map(
+            (cours) =>
+              courseToString(cours)
+          )
       );
     });
   }
@@ -94,28 +86,28 @@ client.on("interactionCreate", async (interaction) => {
 
     await getCoursesAt(demain).then((cours) => {
       interaction.reply(
-        "Voici ton emploi du temps de demain !\n" +
-          cours.map((cours) => courseToString(cours))
+        "Voici ton emploi du temps de demain !\n\n" +
+        "📅  " + demain.toLocaleDateString() + "\n" +
+        cours.map(
+            (cours) =>
+              courseToString(cours)
+          )
       );
     });
   }
   // prochain cours
   if (commandName === "next") {
     await getNextCourse().then((cours) => {
-      if (cours == null) {
-        interaction.reply("Tu n'as plus cours aujourd'hui !");
-      } else {
-        interaction.reply(
-          "Voici ton prochain cours !\n" + courseToString(cours)
-        );
-      }
-    });
-  }
-
-  // changer le liens
-  if (commandName == "changeLink") {
-    // changer le liens de lecture des données
-    changeLink
+        if(cours == null) {
+            interaction.reply("Tu n'as plus cours aujourd'hui ! 🍻")
+        }
+        else {
+            interaction.reply(
+                "Voici ton prochain cours !\n\n" +
+                "📅  " + (new Date()).toLocaleDateString() + "\n" +
+                courseToString(cours)
+            );}
+      });
   }
 });
 
