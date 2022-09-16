@@ -2,7 +2,9 @@ import fetch from "node-fetch";
 import ical2json from "ical2json";
 import { compareAsc, format, parseISO, getHours } from "date-fns";
 
-// fichier contenant toutes les interactions avec le fichier externe
+//                                                                   //
+// fichier contenant toutes les interactions avec le fichier externe //
+//                                                                   //
 
 let url =
   "https://planif.esiee.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=3172&projectId=10&calType=ical&nbWeeks=52";
@@ -59,6 +61,7 @@ function sortCourses(courses) {
   }
 }
 
+// met le cours en paramêtre en string
 export function courseToString(course) {
   return format(parseISO(course.DTSTART), "HH:mm") +
           " : **" +
@@ -68,6 +71,7 @@ export function courseToString(course) {
           "*.\n";
 }
 
+// avoir le prochain cours
 export async function getNextCourse() {
   return new Promise((resolve, reject) => {
     getCoursesAt(new Date()).then((cours) => {
@@ -91,4 +95,9 @@ export async function getNextCourse() {
   })
   .catch((e) => reject(e));
   })
+}
+
+// changement de liens dans la base de donnée
+export function changeLink(link){
+  
 }
