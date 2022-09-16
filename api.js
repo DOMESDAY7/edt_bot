@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import ical2json from "ical2json";
 import { compareAsc, format, parseISO, getHours } from "date-fns";
-
+import { PrismaClient } from "@prisma/client";
 // fichier contenant toutes les interactions avec le fichier externe
 function initialiseURL(langue, weeks) {
   if(langue == null)
@@ -9,26 +9,35 @@ function initialiseURL(langue, weeks) {
 
   return "https://planif.esiee.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=" + langue + ",3172,3173&projectId=10&calType=vcal&nbWeeks="+weeks;
 }
-
+const prisma = new PrismaClient;
 export async function getCoursesAt(date, langue=null, weeks=1) {
+  let langue_id = await prisma.langue.findUnique({
+    where:{
+      id:parseInt(langue),
+    },
+  }).langue_id
+  console.log(langue_id)
   return new Promise((resolve, reject) => {
     let cours_data;
-    let langue_id;
+    // let langue_id;
+    
 
     // Temporary
-    switch(langue) {
-      case "1" : langue_id = 3471; break;
-      case "2" : langue_id = 3472; break;
-      case "3" : langue_id = 3473; break;
-      case "4" : langue_id = 3474; break;
-      case "5" : langue_id = 3096; break;
-      case "6" : langue_id = 2040; break;
-      case "7" : langue_id = 6122; break;
-      case "8" : langue_id = 2881; break;
-      case "9" : langue_id = 1264; break;
-      case "10" : langue_id = 555; break;
-      case "11" : langue_id = 5196; break;
-    }
+   
+    // switch(langue) {
+    //   case "1" : langue_id = 3471; break;
+    //   case "2" : langue_id = 3472; break;
+    //   case "3" : langue_id = 3473; break;
+    //   case "4" : langue_id = 3474; break;
+    //   case "5" : langue_id = 3096; break;
+    //   case "6" : langue_id = 2040; break;
+    //   case "7" : langue_id = 6122; break;
+    //   case "8" : langue_id = 2881; break;
+    //   case "9" : langue_id = 1264; break;
+    //   case "10" : langue_id = 555; break;
+    //   case "11" : langue_id = 5196; break;
+    // }
+
     console.log(langue + " -> " + langue_id)
 
     let url = initialiseURL(langue_id, weeks);

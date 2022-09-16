@@ -1,0 +1,2 @@
+-- insertion des groupes de langue
+INSERT INTO `langue` (`id`, `gp_langue`, `langue_id`) VALUES (NULL, 'A', '3471'), (NULL, 'B', '3472'), (NULL, 'C', '3473'), (NULL, 'D', '3474'), (NULL, 'E', '3096'), (NULL, 'F', '2040'), (NULL, 'G', '6122'), (NULL, 'H', '2881'), (NULL, 'I', '1264'), (NULL, 'J', '555'), (NULL, 'K', '5196');
