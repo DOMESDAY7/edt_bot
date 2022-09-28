@@ -1,7 +1,7 @@
 import { format, compareAsc } from 'date-fns';
 
 export class Course {
-    OUTPUT_MARGIN: number = 20;
+    OUTPUT_MARGIN: number = 100;
 
     id: String;
     name: String;
@@ -30,6 +30,8 @@ export class Course {
         return compareAsc(this.endDate, aujd) == 1 ? "⌛ " : ":white_check_mark: ";
     }
 
+    getCourseStart() { return this.startDate; }
+
     toString(): String  {
         let output: String = '';
 
@@ -41,7 +43,7 @@ export class Course {
                 this.location +
                 "*.\n";
         
-        for(let i:number = 0; i < this.name.length + this.OUTPUT_MARGIN; i++) {
+        for(let i:number = 0; i < this.OUTPUT_MARGIN; i++) {
             output = ',' + output + '\'';
         }
 

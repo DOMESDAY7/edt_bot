@@ -1,10 +1,11 @@
 import axios from "axios";
-import { compareAsc, format, parseISO, getHours } from "date-fns";
+import { compareAsc, format, parseISO, getHours, getDate } from "date-fns";
 import { Course } from "../course/Course";
+import { parseCalendar } from "./iCalendarParser";
 
 //#TODO
 //Generates an URL to fetch data for the specified options
-function buildURL(options: Array<string>): string {
+function buildURL(options: Map<string, string>): string {
     let fetchURL: string;
     
     fetchURL = "https://planif.esiee.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=3172&projectId=10&calType=ical&nbWeeks=1";
@@ -13,51 +14,49 @@ function buildURL(options: Array<string>): string {
 }
 
 //Gets the courses of a targeted day (today if not specifiied) as a Promise from a specified URL
-export function getCoursesAt(options: Array<string>, date: Date = new Date()): Array<Course> {
-    let fetchURL: string = buildURL(options);
+export async function getCoursesAt(options: Map<string, string>, date: Date | null = null, knownURL: string = ""): Promise<Course[]> {
+    let fetchURL: string = knownURL == "" ? buildURL(options) : knownURL;
     let courses: Array<Course> = new Array<Course>();
 
-    axios.get(fetchURL, {
+    await axios.get(fetchURL, {
         headers: {
         "Content-Type": "application/text",
         },
     })
     .then((resp) => {
-        console.log(resp.data);
-
-        /*
+        let courseData: Array<Course> = parseCalendar(resp.data);
+        if(date == null) {
+            courses = courseData;
+            return;
+        }
         let target: string = format(new Date(date), "dd-MM-yyyy");
-        let today: string = format(new Date(), "dd-MM-yyyy");
 
         //Pushing courses that match the targeted day into res
-        courseData.forEach((obj: IDataCalendar) => {
-            if(target === today) {
-                courses.push(new Course(
-                    obj.SUMMARY, "",
-                    parseISO(obj.DTSTART), parseISO(obj.DTEND),
-                    obj.LOCATION));
-            }
-        });  
-        */
+        courseData.forEach((obj: Course) => {
+            let courseDate: string = format(obj.startDate, "dd-MM-yyyy");
+            if(target === courseDate)
+                courses.push(obj); 
+        });
     })
+    courses.sort((a: Course, b: Course) => { return compareAsc(a.startDate, b.startDate); });
+    console.log("⬇ Fetched "+ courses.length + " courses from " + fetchURL);
 
     return courses;
 }
 
 //Gets the next course from a specified URL
-export function getNextCourse(options: Array<string>): Course | null {
+export async function getNextCourse(options: Map<string, string>, knownURL: string = ""): Promise<Course | null> {
     //Getting courses of today to get the next one from present moment
-    let todaysCourses: Array<Course> = getCoursesAt(options, new Date());
-    let heure_actu: number = getHours(new Date());
+    return await getCoursesAt(options, null, knownURL).then((courses) => {
+        let heure_actu: Date = new Date();
 
-    //Getting startDate of every course
-    //Courses are sorted in chronological order so we can just loop in the array
-    for (let i = 0; i < todaysCourses.length; i++) {
-        let tmp = getHours(todaysCourses[i].startDate);
-
-        if (compareAsc(tmp, heure_actu) == 1)
-            return todaysCourses[i];
-    }
-
-    return null;
+        //Getting startDate of every course
+        //Courses are sorted in chronological order so we can just loop in the array
+        for (let i = 0; i < courses.length; i++) {   
+            if (compareAsc(courses[i].startDate, heure_actu) == 1)
+                return courses[i];
+        }
+    
+        return null;
+    })
 }

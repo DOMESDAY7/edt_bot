@@ -1,8 +1,8 @@
 import DiscordJS, { ChatInputCommandInteraction } from "discord.js";
 
 export class EDTBot extends DiscordJS.Client {
-  constructor(alert_id: String) {
-    console.log("EDTBot starting...")
+  constructor() {
+    console.log("↻ EDTBot starting...")
 
     //Initializing Discord Bot Client
     super({
@@ -15,12 +15,14 @@ export class EDTBot extends DiscordJS.Client {
       });
   }
 
-  static resolveInteractionOptions(interaction: ChatInputCommandInteraction, optionsToGet: Array<string>): Array<string> {
-    let optionValues: Array<string> = new Array<string>();
-    optionsToGet.forEach((opt) => {
-      optionValues.push(interaction.options.getString(opt)!);
-    })
+  static resolveInteractionOptions(interaction: ChatInputCommandInteraction): Map<string, string> {
+    let optionValues: Map<string, string> = new Map();
 
+    for(let i: number = 0; i < interaction.options.data.length; i++) {
+      let optionName: string = String(interaction.options.data[i]);
+      optionValues.set(optionName, interaction.options.getString(optionName)!);
+    }
+    
     return optionValues;
   }
 }
