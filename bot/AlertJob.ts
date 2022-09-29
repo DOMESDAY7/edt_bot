@@ -29,7 +29,7 @@ export class AlertJob extends CronJob {
                 this.fetchOptions.forEach((opt: string) => {options += opt});
 
                 this.alertChannel.send("Prochain cours dans " + this.alertOffset
-                                        + " mins pour " + options
+                                        + " mins pour " + options + "\n"
                                         + this.nextCourse.toString());
             }
 
@@ -60,7 +60,7 @@ export class AlertJob extends CronJob {
         getNextCourse(this.fetchOptions).then((course) => {
             if(course === null) return;
             
-            let nextAlertDate: Date = course?.getCourseStart()!;
+            let nextAlertDate: Date = new Date(course?.getCourseStart()!);
             nextAlertDate.setMinutes(nextAlertDate.getMinutes() - this.alertOffset);
 
             if(compareAsc(nextAlertDate, new Date()) == -1) return;
