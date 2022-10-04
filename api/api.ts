@@ -6,11 +6,13 @@ import { parseCalendar } from "./iCalendarParser";
 //#TODO
 //Generates an URL to fetch data for the specified options
 function buildURL(options: Map<string, string>): string {
-    let fetchURL: string;
     
-    fetchURL = "https://planif.esiee.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=3172&projectId=10&calType=ical&nbWeeks=1";
+    if(options.get("semaine")?.length != null){
+      return `https://planif.esiee.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=3172&projectId=10&calType=ical&nbWeeks=${options.get("semaine")}`; 
+    }
+    return "https://planif.esiee.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=3172&projectId=10&calType=ical&nbWeeks=1";
 
-    return fetchURL;
+  
 }
 
 //Gets the courses of a targeted day (today if not specifiied) as a Promise from a specified URL
@@ -45,11 +47,21 @@ export async function getCoursesAt(options: Map<string, string>, date: Date | nu
 }
 
 //Gets the next course from a specified URL
-export async function getNextCourse(options: Map<string, string>, knownURL: string = ""): Promise<Course | null> {
+export async function getNextCourse(options: Map<string, string>, knownURL: string = "",cours:string = ""): Promise<Course | null> {
+  
+  let heure_actu: Date = new Date();
+  if(cours.length !=  0){
+    return await getCoursesAt(options, null, knownURL).then((courses) => {
+      courses = courses.filter(course=> course.name == cours)
+      for (let i = 0; i < courses.length; i++) {   
+        if (compareAsc(courses[i].startDate, heure_actu) == 1)
+            return courses[i+1];
+      }
+      return null;
+    })
+  }
     //Getting courses of today to get the next one from present moment
     return await getCoursesAt(options, null, knownURL).then((courses) => {
-        let heure_actu: Date = new Date();
-
         //Getting startDate of every course
         //Courses are sorted in chronological order so we can just loop in the array
         for (let i = 0; i < courses.length; i++) {   

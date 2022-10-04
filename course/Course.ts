@@ -9,6 +9,7 @@ export class Course {
     endDate: Date;
     location: String;
 
+
     constructor(courseId: String, courseName: String, courseStart: Date, courseEnd: Date, courseLocation: String) {
         this.id = courseId;
         this.name = courseName;
